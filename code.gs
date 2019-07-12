@@ -8,6 +8,9 @@ var constants = {
 
 
 function triggerLoop() {
+  const weekday = new Date().getDay();
+  if (weekday == 0 || weekday == 6) return;
+  
   const currentDay = new Date().getDate();
   const lastMessageDate = PropertiesService.getScriptProperties().getProperty("last_message_date");
   if (lastMessageDate == currentDay) return;
