@@ -44,7 +44,7 @@ function getTodaysPostWithMenu() {
   
   for (i = 0; i < posts.length; i++) {
     const post = posts[i];
-    if (post.text.indexOf("ланч") == -1 || post.text.indexOf(currentDay) == -1) return;
+    if (post.text.toLowerCase().indexOf("ланч") == -1 || post.text.indexOf(currentDay) == -1) return;
     
     return post;
   }
