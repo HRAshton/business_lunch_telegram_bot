@@ -40,11 +40,14 @@ function getTodaysPostWithMenu() {
   const response = UrlFetchApp.fetch(url);
   const posts = JSON.parse(response.getContentText()).response.items;
   
-  const currentDay = new Date().getDate().toString();
+  const currentDate = new Date();
   
   for (i = 0; i < posts.length; i++) {
     const post = posts[i];
-    if (post.text.toLowerCase().indexOf("ланч") == -1 || post.text.indexOf(currentDay) == -1) return;
+    const postDate = new Date(post.date * 1000);
+    
+    if (post.attachments.length != 1 || postDate.toDateString() != currentDate.toDateString()) 
+        return;
     
     return post;
   }
