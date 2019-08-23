@@ -23,7 +23,6 @@ function triggerLoop() {
   const images = actualPost.attachments[0].photo.sizes;
   const imageUrl = images.reverse()[0].url;
   const messageId = sendPhotoAndGetMessageId(imageUrl);
-  sendPool();
   sendRandomSticker();
   
   PropertiesService.getScriptProperties().setProperty("last_tlgr_sent_message_id", messageId);
@@ -65,11 +64,6 @@ function sendPhotoAndGetMessageId(photoUrl) {
   const messageId = model.result.message_id;
   
   return messageId;
-}
-
-function sendPool() {
-  const sendPollUrl = "https://api.telegram.org/bot" + constants.tlgr_access_token + "/sendPoll?chat_id=" + constants.tlgr_chat_id + "&options=[%2212:00%22,%2213:00%22,%2215:00%22,%22nothing%22]&question=%D0%AF%20%D1%81%D0%BE%D0%B1%D0%B8%D1%80%D0%B0%D1%8E%D1%81%D1%8C%20%D0%BF%D0%BE%D0%B9%D1%82%D0%B8%20%D0%BF%D0%BE%D0%BA%D1%83%D1%88%D0%B0%D1%82%D1%8C...%20%D0%9A%D1%82%D0%BE%20%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2%D0%B8%D1%82%20%D0%BC%D0%BD%D0%B5%20%D0%BA%D0%BE%D0%BC%D0%BF%D0%B0%D0%BD%D0%B8%D1%8E?%20%E2%99%A5&disable_notification=1";
-  UrlFetchApp.fetch(sendPollUrl);
 }
 
 function sendRandomSticker() {
