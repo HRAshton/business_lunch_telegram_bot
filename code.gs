@@ -12,7 +12,7 @@ function triggerLoop() {
   if (weekday == 0 || weekday == 6) return;
   
   const currentDay = new Date().getDate();
-  const lastMessageDate = PropertiesService.getScriptProperties().getProperty("last_message_date");
+  const lastMessageDate = ScriptStorage().Get("last_message_date");
   if (lastMessageDate == currentDay) return;
   
   const actualPost = getTodaysPostWithMenu();
@@ -25,19 +25,15 @@ function triggerLoop() {
   const messageId = sendPhotoAndGetMessageId(imageUrl);
   sendRandomSticker();
   
-  PropertiesService.getScriptProperties().setProperty("last_tlgr_sent_message_id", messageId);
-  PropertiesService.getScriptProperties().setProperty("last_message_date", currentDay);
+  ScriptStorage().Save("last_tlgr_sent_message_id", messageId);
+  ScriptStorage().Save("last_message_date", currentDay);
 }
 
 
 
-function getTodaysPostWithMenu() {
-  const url = "https://api.vk.com/method/wall.get?owner_id=" + constants.vk_public_id + 
-    "&access_token=" + constants.vk_access_token + 
-    "&count=5" +
-    "&v=5.101";
-  const response = UrlFetchApp.fetch(url);
-  const posts = JSON.parse(response.getContentText()).response.items;
+function getTodaysPostWithMenu() {  
+  const serverResponse = UrlHelper().SendVkApiRequest(constants.vk_access_token, "wall.get", {owner_id: constants.vk_public_id, count: 5});
+  const posts = serverResponse.response.items;
   
   const currentDate = new Date();
   
@@ -57,11 +53,8 @@ function getTodaysPostWithMenu() {
 
 
 function sendPhotoAndGetMessageId(photoUrl) {
-  const sendPhotoUrl = "https://api.telegram.org/bot" + constants.tlgr_access_token + "/sendPhoto?chat_id=" + constants.tlgr_chat_id + 
-    "&photo=" + photoUrl;
-  const telegramResponse = UrlFetchApp.fetch(sendPhotoUrl).getContentText();
-  const model = JSON.parse(telegramResponse);
-  const messageId = model.result.message_id;
+  const serverResponse = UrlHelper().SendTelegramApiRequest(constants.tlgr_access_token, "sendPhoto", {chat_id: constants.tlgr_chat_id, photo: photoUrl});
+  const messageId = serverResponse.result.message_id;
   
   return messageId;
 }
@@ -87,8 +80,7 @@ function sendRandomSticker() {
   ];
   
   const stickerId = stickerIds[Math.floor(Math.random() * stickerIds.length)];
-  const sendPollUrl = "https://api.telegram.org/bot" + constants.tlgr_access_token + "/sendSticker?chat_id=" + constants.tlgr_chat_id + "&sticker=" + stickerId + "&disable_notification=1";
-  UrlFetchApp.fetch(sendPollUrl);  
+  UrlHelper().SendTelegramApiRequest(constants.tlgr_access_token, "sendSticker", {chat_id: constants.tlgr_chat_id, sticker: stickerId, disable_notification: 1});
 }
 
 
@@ -97,13 +89,9 @@ function deleteLastTlgrMessage() {
   const lastTlgrSentMessageId = PropertiesService.getScriptProperties().getProperty("last_tlgr_sent_message_id");
   if (!lastTlgrSentMessageId) return;
   
-  const deleteMessageUrl = "https://api.telegram.org/bot" + constants.tlgr_access_token + "/deleteMessage?" +
-    "chat_id=" + constants.tlgr_chat_id + 
-    "&message_id=" + lastTlgrSentMessageId;
-  
   try {
-    UrlFetchApp.fetch(deleteMessageUrl);
+    UrlHelper().SendTelegramApiRequest(constants.tlgr_access_token, "deleteMessage", {chat_id: constants.tlgr_chat_id, message_id: lastTlgrSentMessageId});
   } catch (ex) {
-    Logger.log(ex)
+    Logger.log(ex);
   }
 }
