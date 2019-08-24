@@ -1,12 +1,3 @@
-var constants = {
-  vk_access_token: "insert_service_token_here______________________6639cc95c25a3b4d26ee1267",
-  tlgr_access_token: "insert_token_here____________________________",
-  
-  vk_public_id: "-9876543",      // prod
-  tlgr_chat_id: "-9987654", // prod
-}
-
-
 function triggerLoop() {
   const weekday = new Date().getDay();
   if (weekday == 0 || weekday == 6) return;
@@ -79,7 +70,13 @@ function sendRandomSticker() {
     "CAADAgADdCEAAmOLRgyY85zpuGMocQI"
   ];
   
-  const stickerId = stickerIds[Math.floor(Math.random() * stickerIds.length)];
+  var stickersQueue = ScriptStorage().Get("stickers_queue") || [];
+  if (stickersQueue.length === 0) {
+    stickersQueue = CommonHelpers().ShuffleArray(constants.stickerIds);
+  }
+  const stickerId = stickersQueue.pop();
+  ScriptStorage().Save("stickers_queue", stickersQueue);
+  
   UrlHelper().SendTelegramApiRequest(constants.tlgr_access_token, "sendSticker", {chat_id: constants.tlgr_chat_id, sticker: stickerId, disable_notification: 1});
 }
 

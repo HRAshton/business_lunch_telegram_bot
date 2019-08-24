@@ -1,17 +1,17 @@
 function ScriptStorage() {
   return {
-    Save: SaveToStorage,
-    Get: GetFromStorage,
+    Save: _saveToStorage,
+    Get: _getFromStorage,
   }
 }
 
 
-function SaveToStorage(variableName, data) {
+function _saveToStorage(variableName, data) {
   const stringData = JSON.stringify(data);
   PropertiesService.getScriptProperties().setProperty(variableName, stringData);
 }
 
-function GetFromStorage(variableName) {
+function _getFromStorage(variableName) {
   const savedData = PropertiesService.getScriptProperties().getProperty(variableName);
   const originalData = JSON.parse(savedData);
   

@@ -1,41 +1,41 @@
 function UrlHelper() {
   return {
-    SendCommonRequest: SendCommonRequest,
-    SendTelegramApiRequest: SendTelegramApiRequest,
-    SendVkApiRequest: SendVkApiRequest,
+    SendCommonRequest: _sendCommonRequest,
+    SendTelegramApiRequest: _sendTelegramApiRequest,
+    SendVkApiRequest: _sendVkApiRequest,
   }
 }
 
 
-function SendCommonRequest(url, queryDataDict) {
-  const queryString = CreateQueryString(queryDataDict);
+function _sendCommonRequest(url, queryDataDict) {
+  const queryString = _createQueryString(queryDataDict);
   const fullUrl = url + "?" + queryString;
   const textResponse = UrlFetchApp.fetch(fullUrl).getContentText();
   
   return textResponse;
 }
 
-function SendTelegramApiRequest(token, apiMethod, queryDataDict) {
+function _sendTelegramApiRequest(token, apiMethod, queryDataDict) {
   const url = "https://api.telegram.org/bot" + token + "/" + apiMethod;
-  const response = SendCommonRequest(url, queryDataDict);
+  const response = _sendCommonRequest(url, queryDataDict);
   const responseModel = JSON.parse(response);
   
   return responseModel;
 }
 
-function SendVkApiRequest(token, apiMethod, queryDataDict) {
+function _sendVkApiRequest(token, apiMethod, queryDataDict) {
   queryDataDict.access_token = token;
   queryDataDict.v = "5.101";
   
   const url = "https://api.vk.com/method/" + apiMethod;
-  const response = SendCommonRequest(url, queryDataDict);
+  const response = _sendCommonRequest(url, queryDataDict);
   const responseModel = JSON.parse(response);
   
   return responseModel;
 }
 
 
-function CreateQueryString(queryDataDict) {
+function _createQueryString(queryDataDict) {
   var str = [];
   
   for (var p in queryDataDict) {
