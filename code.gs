@@ -26,13 +26,12 @@ function getTodaysPostWithMenu() {
   const serverResponse = UrlHelper().SendVkApiRequest(constants.vk_access_token, "wall.get", {owner_id: constants.vk_public_id, count: 5});
   const posts = serverResponse.response.items;
   
-  const currentDate = new Date();
+  const todayDateNumber = new Date().toISOString().substr(8, 2);
   
   for (i = 0; i < posts.length; i++) {
     const post = posts[i];
-    const postDate = new Date(post.date * 1000);
-    
-    if (post.attachments.length != 1 || postDate.toDateString() != currentDate.toDateString()) 
+        
+    if (post.attachments.length != 1 || post.text.indexOf(todayDateNumber) == -1)
         return;
     
     return post;
@@ -72,7 +71,7 @@ function sendRandomSticker() {
   
   var stickersQueue = ScriptStorage().Get("stickers_queue") || [];
   if (stickersQueue.length === 0) {
-    stickersQueue = CommonHelpers().ShuffleArray(constants.stickerIds);
+    stickersQueue = CommonHelpers().ShuffleArray(stickerIds);
   }
   const stickerId = stickersQueue.pop();
   ScriptStorage().Save("stickers_queue", stickersQueue);
